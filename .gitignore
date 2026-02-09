@@ -1,0 +1,16 @@
+
+# Environment
+.env
+
+# Go build
+/bin/
+/dist/
+*.exe
+*.out
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
