@@ -29,7 +29,36 @@ func NewAuthService(cnf *config.Config, userRepository domain.UserRepository) do
 
 // Login implements [domain.AuthService].
 func (a *AuthService) Login(ctx context.Context, req dto.AuthRequest) (dto.AuthResponse, error) {
-	panic("unimplemented")
+	cekEmail, err := a.userRepository.FindByEmail(ctx, req.Email)
+	if err != nil {
+		return dto.AuthResponse{}, errors.New("Email tidak terdaftar")
+	}
+	if cekEmail.Id == "" {
+		return dto.AuthResponse{}, errors.New("Failed to login, email tidak terdaftar")
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(cekEmail.Password), []byte(req.Password))
+	if err != nil {
+		return dto.AuthResponse{}, errors.New("Password salah")
+	}
+
+	claim := jwt.MapClaims{
+		"id":  cekEmail.Id,
+		"exp": time.Now().Add(time.Duration(a.conf.Jwt.Expire) * time.Minute).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	tokenStr, err := token.SignedString([]byte(a.conf.Jwt.Key))
+	if err != nil {
+		return dto.AuthResponse{}, errors.New("Failed to generate token")
+	}
+	return dto.AuthResponse{
+		Code:    200,
+		Message: "Login Success",
+		User: dto.User{
+			ID:    cekEmail.Id,
+			Email: cekEmail.Email,
+		},
+		Token: tokenStr,
+	}, nil
 }
 
 // Registrasi implements [domain.AuthService].
@@ -38,6 +67,7 @@ func (a *AuthService) Registrasi(ctx context.Context, req dto.AuthRequest) (dto.
 	if err != nil {
 		return dto.AuthResponse{}, errors.New("Email sudah terdaftar")
 	}
+
 	if cekEmail.Id != "" {
 		return dto.AuthResponse{}, errors.New("Failed to registrasi, email sudah terdaftar")
 	}
