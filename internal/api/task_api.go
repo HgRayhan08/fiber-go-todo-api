@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"time"
 	"todo-list/domain"
 	"todo-list/dto"
@@ -15,11 +14,11 @@ type taskApi struct {
 	todoService domain.TaskService
 }
 
-func NewTaskApi(app *fiber.App, todoService domain.TaskService) {
+func NewTaskApi(app *fiber.App, todoService domain.TaskService, jwtMidd fiber.Handler) {
 	task := taskApi{todoService: todoService}
 
-	app.Get("/todo", task.Index)
-	app.Post("/todo", task.Create)
+	app.Get("/todo", jwtMidd, task.Index)
+	app.Post("/todo", jwtMidd, task.Create)
 }
 
 func (t *taskApi) Index(ctx fiber.Ctx) error {
@@ -31,8 +30,6 @@ func (t *taskApi) Index(ctx fiber.Ctx) error {
 		return err
 	}
 	status := ctx.Response().StatusCode()
-	fmt.Println("HTTP Status:", status)
-	fmt.Println(res)
 
 	return ctx.Status(200).JSON(dto.ResponseSucsessData(status, "Success Get All Todo", res))
 }

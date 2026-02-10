@@ -23,7 +23,7 @@ func main() {
 			ErrorHandler: middleware.ErrorHandler(),
 		},
 	)
-
+	jwtMidd := middleware.JWTProtected(*config)
 	// Middleware Rate Limiting
 	app.Use(middleware.RateLimited())
 
@@ -36,7 +36,7 @@ func main() {
 	AuthService := service.NewAuthService(config, authDatabase)
 
 	// API
-	api.NewTaskApi(app, TaskService)
+	api.NewTaskApi(app, TaskService, jwtMidd)
 	api.NewAuthApi(app, AuthService)
 
 	// api.NewTodoDatabase(todoDatabase)
