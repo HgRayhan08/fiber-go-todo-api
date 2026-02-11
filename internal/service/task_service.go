@@ -64,3 +64,8 @@ func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, e
 	}
 	return formattedTodo, nil
 }
+
+// Delete implements [domain.TaskService].
+func (t *TodoService) Delete(ctx context.Context, f fiber.Ctx, id string) error {
+	return t.todoRepository.Delete(ctx, id)
+}

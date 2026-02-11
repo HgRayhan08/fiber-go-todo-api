@@ -8,6 +8,7 @@ import (
 type Category struct {
 	Id        string       `db:"id"`
 	Name      string       `db:"name"`
+	UserId    string       `db:"user_id"`
 	CreatedAt sql.NullTime `db:"created_at"`
 }
 

@@ -18,3 +18,7 @@ type CreateTaskRequest struct {
 	Title       string `json:"title" validate:"required,min=3,max=100"`
 	Description string `json:"description" validate:"required,min=3,max=500"`
 }
+
+type DeleteTaskRequest struct {
+	Id string `json:"id_task" validate:"required,uuid4"`
+}

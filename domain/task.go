@@ -29,4 +29,5 @@ type TaskRepository interface {
 type TaskService interface {
 	Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, error)
 	Create(ctx context.Context, f fiber.Ctx, request dto.CreateTaskRequest) error
+	Delete(ctx context.Context, f fiber.Ctx, id string) error
 }

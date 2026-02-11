@@ -19,6 +19,7 @@ func NewTaskApi(app *fiber.App, todoService domain.TaskService, jwtMidd fiber.Ha
 
 	app.Get("/todo", jwtMidd, task.Index)
 	app.Post("/todo", jwtMidd, task.Create)
+	app.Delete("/todo", jwtMidd, task.Delete)
 }
 
 func (t *taskApi) Index(ctx fiber.Ctx) error {
@@ -52,6 +53,26 @@ func (t *taskApi) Create(ctx fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.Status(201).JSON(dto.ResponseSucsess(fiber.StatusCreated, "Success Create Todo"))
+	return ctx.Status(201).JSON(dto.ResponseSucsess(fiber.StatusCreated, "Success Create Task"))
+}
 
+func (t *taskApi) Delete(ctx fiber.Ctx) error {
+	c, cancel := context.WithTimeout(ctx.Context(), 10*time.Second)
+	defer cancel()
+
+	var req dto.DeleteTaskRequest
+
+	if err := ctx.Bind().Body(&req); err != nil {
+		return err
+	}
+	fails := utils.Validate(req)
+	if len(fails) > 0 {
+		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ResponseError(fiber.StatusBadRequest, "Validation failed, please check your input data"))
+	}
+
+	err := t.todoService.Delete(c, ctx, req.Id)
+	if err != nil {
+		return err
+	}
+	return ctx.Status(200).JSON(dto.ResponseSucsess(fiber.StatusOK, "Success Delete Task"))
 }

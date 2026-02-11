@@ -29,7 +29,9 @@ func (t *TodoDatabase) Create(ctx context.Context, todo domain.Task) error {
 
 // Delete implements [domain.TaskRepository].
 func (t *TodoDatabase) Delete(ctx context.Context, idTodo string) error {
-	panic("unimplemented")
+	dataset := t.db.Delete("task").Where(goqu.C("id").In(idTodo)).Executor()
+	_, err := dataset.ExecContext(ctx)
+	return err
 }
 
 // FindAll implements [domain.TaskRepository].
@@ -48,10 +50,14 @@ func (t *TodoDatabase) FindAll(ctx context.Context, id string) (result []domain.
 
 // FindById implements [domain.TaskRepository].
 func (t *TodoDatabase) FindById(ctx context.Context, idTodo string) (result domain.Task, err error) {
-	panic("unimplemented")
+	dataset := t.db.From("task").Where(goqu.C("id").Eq(idTodo))
+	err = dataset.ScanStructsContext(ctx, &result)
+	return
 }
 
 // Update implements [domain.TaskRepository].
 func (t *TodoDatabase) Update(ctx context.Context, todo domain.Task) error {
-	panic("unimplemented")
+	dataset := t.db.Update("task").Where(goqu.C("id").Eq(todo.Id)).Set(todo).Executor()
+	_, err := dataset.ExecContext(ctx)
+	return err
 }
