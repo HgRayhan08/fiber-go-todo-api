@@ -21,6 +21,20 @@ func NewCategoryService(categoryRepository domain.CategoryRepository) domain.Cat
 	}
 }
 
+// IndexById implements [domain.CategoryService].
+func (c *CategoryService) IndexById(ctx context.Context, idCategory string) (dto.CategoryData, error) {
+	category, err := c.categoryRepository.FindById(ctx, idCategory)
+	if err != nil {
+		return dto.CategoryData{}, err
+	}
+	return dto.CategoryData{
+		Id:        category.Id,
+		Name:      category.Name,
+		UserID:    category.UserId,
+		CreatedAt: category.CreatedAt.Time.String(),
+	}, nil
+}
+
 // Create implements [domain.CategoryService].
 func (c *CategoryService) Create(ctx context.Context, f fiber.Ctx, data dto.CreateCategoryRequest) error {
 	userID := f.Locals("user_id").(string)
@@ -43,7 +57,6 @@ func (c *CategoryService) Delete(ctx context.Context, f fiber.Ctx, idCategory st
 func (c *CategoryService) IndexUser(ctx context.Context, f fiber.Ctx) ([]dto.CategoryData, error) {
 
 	userId := f.Locals("user_id").(string)
-
 	data, err := c.categoryRepository.FindAllUser(ctx, userId)
 	if err != nil {
 		return nil, err

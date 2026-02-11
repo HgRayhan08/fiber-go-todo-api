@@ -36,7 +36,7 @@ func main() {
 	categoryDatabase := repository.NewCategoryDatabase(dbConnection)
 
 	// Service
-	TaskService := service.NewTodoService(taskDatabase)
+	TaskService := service.NewTodoService(taskDatabase, categoryDatabase)
 	AuthService := service.NewAuthService(config, authDatabase)
 	categoryService := service.NewCategoryService(categoryDatabase)
 

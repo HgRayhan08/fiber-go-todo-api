@@ -18,6 +18,13 @@ func NewCategoryDatabase(con *sql.DB) domain.CategoryRepository {
 	}
 }
 
+// FindById implements [domain.CategoryRepository].
+func (c *CategoryDatabase) FindById(ctx context.Context, idCategory string) (result domain.Category, err error) {
+	dataset := c.db.From("category").Where(goqu.C("id").Eq(idCategory))
+	err = dataset.ScanStructsContext(ctx, &result)
+	return
+}
+
 // Delete implements [domain.CategoryRepository].
 func (c *CategoryDatabase) Delete(ctx context.Context, idCategory string) error {
 	dataset := c.db.Delete("category").Where(goqu.C("id").In(idCategory)).Executor()

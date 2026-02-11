@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 	"todo-list/domain"
 	"todo-list/dto"
@@ -12,12 +13,14 @@ import (
 )
 
 type TodoService struct {
-	todoRepository domain.TaskRepository
+	todoRepository     domain.TaskRepository
+	categoryRepository domain.CategoryRepository
 }
 
-func NewTodoService(todoRepository domain.TaskRepository) domain.TaskService {
+func NewTodoService(todoRepository domain.TaskRepository, categoryRepository domain.CategoryRepository) domain.TaskService {
 	return &TodoService{
-		todoRepository: todoRepository,
+		todoRepository:     todoRepository,
+		categoryRepository: categoryRepository,
 	}
 }
 
@@ -42,10 +45,16 @@ func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, e
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("ini data ", todo)
 	var formattedTodo []dto.TaskData
 
 	for _, v := range todo {
+
+		categoryData, err := t.categoryRepository.FindById(ctx, v.CategoryID)
+		if err != nil {
+			return nil, err
+		}
+
 		var updatedAt *time.Time = nil
 		if v.UpdatedAt.Valid {
 			t := v.UpdatedAt.Time
@@ -56,6 +65,7 @@ func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, e
 			UserID:      userID,
 			Title:       v.Title,
 			Description: v.Description,
+			Category:    categoryData.Name,
 			Status:      v.Status,
 			CreatedAt:   v.CreatedAt.Time,
 			UpdatedAt:   updatedAt,

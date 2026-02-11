@@ -17,12 +17,14 @@ type Category struct {
 
 type CategoryRepository interface {
 	FindAllUser(ctx context.Context, idUser string) ([]Category, error)
+	FindById(ctx context.Context, idCategory string) (Category, error)
 	Save(ctx context.Context, category Category) error
 	Delete(ctx context.Context, idCategory string) error
 }
 
 type CategoryService interface {
 	IndexUser(ctx context.Context, f fiber.Ctx) ([]dto.CategoryData, error)
+	IndexById(ctx context.Context, idCategory string) (dto.CategoryData, error)
 	Create(ctx context.Context, f fiber.Ctx, name dto.CreateCategoryRequest) error
 	Delete(ctx context.Context, f fiber.Ctx, idCategory string) error
 }

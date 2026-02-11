@@ -13,7 +13,7 @@ type Task struct {
 	UserID      string       `db:"user_id"`
 	Title       string       `db:"title"`
 	Description string       `db:"description"`
-	categoryId  string       `db:"category_id"`
+	CategoryID  string       `db:"category_id"`
 	Status      string       `db:"status"`
 	CreatedAt   sql.NullTime `db:"created_at"`
 	UpdatedAt   sql.NullTime `db:"updated_at"`
