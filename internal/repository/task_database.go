@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"todo-list/domain"
 
 	"github.com/doug-martin/goqu/v9"
@@ -38,7 +37,6 @@ func (t *TodoDatabase) Delete(ctx context.Context, idTodo string) error {
 func (t *TodoDatabase) FindAll(ctx context.Context, id string) (result []domain.Task, err error) {
 
 	if t.db == nil {
-		fmt.Println("database is nil: goqu instance not initialized")
 		return nil, errors.New("database is nil: goqu instance not initialized")
 	}
 	dataaset := t.db.From("task").Where(goqu.C("user_id").Eq(id))

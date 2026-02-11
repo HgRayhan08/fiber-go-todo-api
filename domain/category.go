@@ -3,6 +3,9 @@ package domain
 import (
 	"context"
 	"database/sql"
+	"todo-list/dto"
+
+	"github.com/gofiber/fiber/v3"
 )
 
 type Category struct {
@@ -19,7 +22,7 @@ type CategoryRepository interface {
 }
 
 type CategoryService interface {
-	IndexUser(ctx context.Context, idUser string) ([]Category, error)
-	Create(ctx context.Context, name string) error
-	Delete(ctx context.Context, idCategory string) error
+	IndexUser(ctx context.Context, f fiber.Ctx) ([]dto.CategoryData, error)
+	Create(ctx context.Context, f fiber.Ctx, name dto.CreateCategoryRequest) error
+	Delete(ctx context.Context, f fiber.Ctx, idCategory string) error
 }
