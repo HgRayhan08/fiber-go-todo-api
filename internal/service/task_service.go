@@ -7,6 +7,7 @@ import (
 	"todo-list/domain"
 	"todo-list/dto"
 
+	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 )
 
@@ -21,9 +22,11 @@ func NewTodoService(todoRepository domain.TaskRepository) domain.TaskService {
 }
 
 // Create implements [domain.TodoService].
-func (t *TodoService) Create(ctx context.Context, request dto.CreateTaskRequest) error {
+func (t *TodoService) Create(ctx context.Context, f fiber.Ctx, request dto.CreateTaskRequest) error {
+	userID := f.Locals("user_id").(string)
 	todo := domain.Task{
 		Id:          uuid.New().String(),
+		UserID:      userID,
 		Title:       request.Title,
 		Description: request.Description,
 		Status:      "Progress",
@@ -33,8 +36,9 @@ func (t *TodoService) Create(ctx context.Context, request dto.CreateTaskRequest)
 }
 
 // Index implements [domain.TodoService].
-func (t *TodoService) Index(ctx context.Context) ([]dto.TaskData, error) {
-	todo, err := t.todoRepository.FindAll(ctx)
+func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, error) {
+	userID := f.Locals("user_id").(string)
+	todo, err := t.todoRepository.FindAll(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,6 +53,7 @@ func (t *TodoService) Index(ctx context.Context) ([]dto.TaskData, error) {
 		}
 		formattedTodo = append(formattedTodo, dto.TaskData{
 			Id:          v.Id,
+			UserID:      userID,
 			Title:       v.Title,
 			Description: v.Description,
 			Status:      v.Status,

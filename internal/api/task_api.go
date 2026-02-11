@@ -25,7 +25,7 @@ func (t *taskApi) Index(ctx fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), 10*time.Second)
 	defer cancel()
 
-	res, err := t.todoService.Index(c)
+	res, err := t.todoService.Index(c, ctx)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (t *taskApi) Create(ctx fiber.Ctx) error {
 	if len(fails) > 0 {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ResponseError(fiber.StatusBadRequest, "Validation failed, please check your input data"))
 	}
-	err := t.todoService.Create(c, req)
+	err := t.todoService.Create(c, ctx, req)
 	if err != nil {
 		return err
 	}

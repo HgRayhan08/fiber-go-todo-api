@@ -23,7 +23,10 @@ func main() {
 			ErrorHandler: middleware.ErrorHandler(),
 		},
 	)
+
+	// middleware JWT Protected
 	jwtMidd := middleware.JWTProtected(*config)
+
 	// Middleware Rate Limiting
 	app.Use(middleware.RateLimited())
 

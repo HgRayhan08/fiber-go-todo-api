@@ -33,13 +33,13 @@ func (t *TodoDatabase) Delete(ctx context.Context, idTodo string) error {
 }
 
 // FindAll implements [domain.TaskRepository].
-func (t *TodoDatabase) FindAll(ctx context.Context) (result []domain.Task, err error) {
+func (t *TodoDatabase) FindAll(ctx context.Context, id string) (result []domain.Task, err error) {
 
 	if t.db == nil {
 		fmt.Println("database is nil: goqu instance not initialized")
 		return nil, errors.New("database is nil: goqu instance not initialized")
 	}
-	dataaset := t.db.From("task")
+	dataaset := t.db.From("task").Where(goqu.C("user_id").Eq(id))
 	// dataaset := c.db.From("customers")
 	err = dataaset.ScanStructsContext(ctx, &result)
 	return
