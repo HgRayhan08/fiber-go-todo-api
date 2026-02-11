@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 	"todo-list/domain"
 	"todo-list/dto"
@@ -24,17 +23,80 @@ func NewTodoService(todoRepository domain.TaskRepository, categoryRepository dom
 	}
 }
 
+// Show implements [domain.TaskService].
+func (t *TodoService) Show(ctx context.Context, idtask dto.IdTaskRequest) (dto.TaskData, error) {
+	dataTask, err := t.todoRepository.Show(ctx, idtask)
+	if err != nil {
+		return dto.TaskData{}, err
+	}
+
+	var createdAt time.Time
+	if dataTask.CreatedAt.Valid {
+		t := dataTask.UpdatedAt.Time
+		createdAt = t
+	}
+
+	var updatedAt *time.Time = nil
+	if dataTask.UpdatedAt.Valid {
+		t := dataTask.UpdatedAt.Time
+		updatedAt = &t
+	}
+	return dto.TaskData{
+		Id:          dataTask.Id,
+		UserID:      dataTask.UserID,
+		Title:       dataTask.Title,
+		Description: dataTask.Description,
+		Category:    dataTask.Category,
+		CategoryId:  dataTask.CategoryID,
+		Status:      dataTask.Status,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
+	}, nil
+}
+
+// Update implements [domain.TaskService].
+func (t *TodoService) Update(ctx context.Context, f fiber.Ctx, request domain.Task) error {
+	dataTask, err := t.todoRepository.FindById(ctx, request.Id)
+	if err != nil {
+		return err
+	}
+
+	CategoryData, err := t.categoryRepository.FindById(ctx, request.CategoryID)
+	if err != nil {
+		return err
+	}
+
+	dataTask.Title = request.Title
+	dataTask.Description = request.Description
+	dataTask.Status = request.Status
+	dataTask.CategoryID = request.CategoryID
+	dataTask.Category = CategoryData.Name
+	dataTask.UpdatedAt = sql.NullTime{Valid: true, Time: time.Now()}
+
+	return t.todoRepository.Update(ctx, dataTask)
+}
+
 // Create implements [domain.TodoService].
-func (t *TodoService) Create(ctx context.Context, f fiber.Ctx, request dto.CreateTaskRequest) error {
+func (t *TodoService) Create(ctx context.Context, f fiber.Ctx, request dto.TaskRequest) error {
 	userID := f.Locals("user_id").(string)
+
+	categoryData, err := t.categoryRepository.FindById(ctx, request.CategoryID)
+
+	if err != nil {
+		return err
+	}
+
 	todo := domain.Task{
 		Id:          uuid.New().String(),
 		UserID:      userID,
 		Title:       request.Title,
+		CategoryID:  request.CategoryID,
+		Category:    categoryData.Name,
 		Description: request.Description,
 		Status:      "Progress",
 		CreatedAt:   sql.NullTime{Valid: true, Time: time.Now()},
 	}
+
 	return t.todoRepository.Create(ctx, todo)
 }
 
@@ -45,15 +107,9 @@ func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, e
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("ini data ", todo)
 	var formattedTodo []dto.TaskData
 
 	for _, v := range todo {
-
-		categoryData, err := t.categoryRepository.FindById(ctx, v.CategoryID)
-		if err != nil {
-			return nil, err
-		}
 
 		var updatedAt *time.Time = nil
 		if v.UpdatedAt.Valid {
@@ -65,7 +121,8 @@ func (t *TodoService) Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, e
 			UserID:      userID,
 			Title:       v.Title,
 			Description: v.Description,
-			Category:    categoryData.Name,
+			CategoryId:  v.CategoryID,
+			Category:    v.Category,
 			Status:      v.Status,
 			CreatedAt:   v.CreatedAt.Time,
 			UpdatedAt:   updatedAt,

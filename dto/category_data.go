@@ -10,3 +10,7 @@ type CategoryData struct {
 type CreateCategoryRequest struct {
 	Name string `json:"name" validate:"required,min=3,max=100"`
 }
+
+type IdCategoryRequest struct {
+	Id string `json:"id" validate:"required,uuid4"`
+}

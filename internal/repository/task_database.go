@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"todo-list/domain"
+	"todo-list/dto"
 
 	"github.com/doug-martin/goqu/v9"
 )
@@ -17,6 +18,13 @@ func NewTodoDatabase(con *sql.DB) domain.TaskRepository {
 	return &TodoDatabase{
 		db: goqu.New("postgres", con),
 	}
+}
+
+// Show implements [domain.TaskRepository].
+func (t *TodoDatabase) Show(ctx context.Context, idTask dto.IdTaskRequest) (result domain.Task, err error) {
+	dataset := t.db.From("task").Where(goqu.C("id").Eq(idTask.Id))
+	err = dataset.ScanStructsContext(ctx, &result)
+	return
 }
 
 // Create implements [domain.TaskRepository].
