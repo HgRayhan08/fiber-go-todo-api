@@ -9,17 +9,17 @@ A simple Golang REST API application for managing tasks with JWT authentication.
 - [JWT](https://github.com/golang-jwt/jwt)
 
 ## **Folder Structure**
-project-name/
-├── domain/               # File Model
-├── dto/                  # Data Transfer Objects (DTO) untuk request & response
+Todo-list
+├── domain/ # Domain models / Entity definitions
+├── dto/ # Data Transfer Objects (DTO) for request & response
 ├── internal/
-│   ├── Api/              # API handlers & route definitions 
-|   ├── Config/           # File konfigurasi init database
-|   ├── Connection/       # File Database connection setup
-│   ├── middleware/       # JWT middleware, dll
-│   ├── repository/       # Logic Database accsess
-│   ├── service/          # Business logic
-│   └── utils/            # Helper functions and utilities
+│ ├── api/ # API handlers & route definitions
+│ ├── config/ # App configuration (e.g., database initialization)
+│ ├── connection/ # Database connection setup
+│ ├── middleware/ # JWT, logging, and other middleware
+│ ├── repository/ # Database access / repository layer
+│ ├── service/ # Business logic
+│ └── utils/ # Helper functions and utilities
 ├── go.mod
 ├── go.sum
 └── main.go
