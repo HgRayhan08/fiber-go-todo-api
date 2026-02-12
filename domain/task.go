@@ -33,6 +33,6 @@ type TaskService interface {
 	Index(ctx context.Context, f fiber.Ctx) ([]dto.TaskData, error)
 	Show(ctx context.Context, idtask dto.IdTaskRequest) (dto.TaskData, error)
 	Create(ctx context.Context, f fiber.Ctx, request dto.TaskRequest) error
-	Update(ctx context.Context, f fiber.Ctx, request Task) error
+	Update(ctx context.Context, f fiber.Ctx, request dto.UpdateTask) error
 	Delete(ctx context.Context, f fiber.Ctx, id string) error
 }

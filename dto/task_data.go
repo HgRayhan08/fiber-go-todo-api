@@ -25,3 +25,11 @@ type TaskRequest struct {
 type IdTaskRequest struct {
 	Id string `json:"id_task" validate:"required,uuid4"`
 }
+
+type UpdateTask struct {
+	IdTask      string `json:"id_task" validate:"required,uuid4"`
+	Title       string `json:"title" validate:"required,min=3,max=100"`
+	Description string `json:"description" validate:"required,min=3,max=500"`
+	Status      string `json:"status" validate:"required"`
+	CategoryID  string `json:"category_id" validate:"required,uuid4"`
+}

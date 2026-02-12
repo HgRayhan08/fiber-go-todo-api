@@ -55,8 +55,8 @@ func (t *TodoService) Show(ctx context.Context, idtask dto.IdTaskRequest) (dto.T
 }
 
 // Update implements [domain.TaskService].
-func (t *TodoService) Update(ctx context.Context, f fiber.Ctx, request domain.Task) error {
-	dataTask, err := t.todoRepository.FindById(ctx, request.Id)
+func (t *TodoService) Update(ctx context.Context, f fiber.Ctx, request dto.UpdateTask) error {
+	dataTask, err := t.todoRepository.FindById(ctx, request.IdTask)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,6 @@ func (t *TodoService) Update(ctx context.Context, f fiber.Ctx, request domain.Ta
 // Create implements [domain.TodoService].
 func (t *TodoService) Create(ctx context.Context, f fiber.Ctx, request dto.TaskRequest) error {
 	userID := f.Locals("user_id").(string)
-
 	categoryData, err := t.categoryRepository.FindById(ctx, request.CategoryID)
 
 	if err != nil {
@@ -93,8 +92,9 @@ func (t *TodoService) Create(ctx context.Context, f fiber.Ctx, request dto.TaskR
 		CategoryID:  request.CategoryID,
 		Category:    categoryData.Name,
 		Description: request.Description,
-		Status:      "Progress",
+		Status:      "progress",
 		CreatedAt:   sql.NullTime{Valid: true, Time: time.Now()},
+		UpdatedAt:   sql.NullTime{Valid: false},
 	}
 
 	return t.todoRepository.Create(ctx, todo)

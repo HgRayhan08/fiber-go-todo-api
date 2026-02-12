@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 	"todo-list/domain"
 	"todo-list/dto"
@@ -23,7 +24,10 @@ func NewCategoryService(categoryRepository domain.CategoryRepository) domain.Cat
 
 // IndexById implements [domain.CategoryService].
 func (c *CategoryService) IndexById(ctx context.Context, idCategory string) (dto.CategoryData, error) {
+	fmt.Println("ini di servis category", idCategory)
 	category, err := c.categoryRepository.FindById(ctx, idCategory)
+	fmt.Println("ini error category", err)
+	fmt.Println("ini data nya category", category)
 	if err != nil {
 		return dto.CategoryData{}, err
 	}

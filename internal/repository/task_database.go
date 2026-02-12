@@ -23,7 +23,7 @@ func NewTodoDatabase(con *sql.DB) domain.TaskRepository {
 // Show implements [domain.TaskRepository].
 func (t *TodoDatabase) Show(ctx context.Context, idTask dto.IdTaskRequest) (result domain.Task, err error) {
 	dataset := t.db.From("task").Where(goqu.C("id").Eq(idTask.Id))
-	err = dataset.ScanStructsContext(ctx, &result)
+	_, err = dataset.ScanStructContext(ctx, &result)
 	return
 }
 
@@ -32,6 +32,7 @@ func (t *TodoDatabase) Create(ctx context.Context, todo domain.Task) error {
 	executor := t.db.Insert("task").Rows(todo).Executor()
 	_, err := executor.ExecContext(ctx)
 	return err
+
 }
 
 // Delete implements [domain.TaskRepository].
@@ -57,7 +58,7 @@ func (t *TodoDatabase) FindAll(ctx context.Context, id string) (result []domain.
 // FindById implements [domain.TaskRepository].
 func (t *TodoDatabase) FindById(ctx context.Context, idTodo string) (result domain.Task, err error) {
 	dataset := t.db.From("task").Where(goqu.C("id").Eq(idTodo))
-	err = dataset.ScanStructsContext(ctx, &result)
+	_, err = dataset.ScanStructContext(ctx, &result)
 	return
 }
 

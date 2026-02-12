@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"todo-list/domain"
 	"todo-list/dto"
@@ -17,9 +18,9 @@ type taskApi struct {
 func NewTaskApi(app *fiber.App, todoService domain.TaskService, jwtMidd fiber.Handler) {
 	task := taskApi{todoService: todoService}
 
+	app.Post("/todo", jwtMidd, task.Create)   // create task
 	app.Get("/todo/all", jwtMidd, task.Index) // show all task user
 	app.Get("/todo", jwtMidd, task.Show)      // show detail task
-	app.Post("/todo", jwtMidd, task.Create)   // create task
 	app.Put("/todo", jwtMidd, task.Update)    // update task
 	app.Delete("/todo", jwtMidd, task.Delete) // delete task
 }
@@ -58,7 +59,7 @@ func (t *taskApi) Create(ctx fiber.Ctx) error {
 	// panic("unimplemented")
 	c, cancel := context.WithTimeout(ctx.Context(), 10*time.Second)
 	defer cancel()
-
+	fmt.Printf("ini awal")
 	var req dto.TaskRequest
 	if err := ctx.Bind().Body(&req); err != nil {
 		return err
@@ -68,6 +69,7 @@ func (t *taskApi) Create(ctx fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(dto.ResponseError(fiber.StatusBadRequest, "Validation failed, please check your input data"))
 	}
 	err := t.todoService.Create(c, ctx, req)
+	fmt.Println(err)
 	if err != nil {
 		return err
 	}
@@ -99,7 +101,7 @@ func (t *taskApi) Update(ctx fiber.Ctx) error {
 	c, cancel := context.WithTimeout(ctx.Context(), 10*time.Second)
 	defer cancel()
 
-	var req domain.Task
+	var req dto.UpdateTask
 	if err := ctx.Bind().Body(&req); err != nil {
 		return err
 	}
