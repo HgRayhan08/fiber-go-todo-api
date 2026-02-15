@@ -46,5 +46,6 @@ func main() {
 	api.NewCategoryApi(app, categoryService, jwtMidd)
 
 	// api.NewTodoDatabase(todoDatabase)
-	_ = app.Listen(config.Server.Host + ":" + config.Server.Port)
+	// _ = app.Listen(config.Server.Host + ":" + config.Server.Port)
+	app.Listen(":9000")
 }

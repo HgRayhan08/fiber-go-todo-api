@@ -10,10 +10,17 @@ import (
 
 func Get() *Config {
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("error loading .env file:", err.Error())
+	// err := godotenv.Load()
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Println("No .env file found, using system environment")
+	// }
+	// if err != nil {
+	// 	log.Fatal("error loading .env file:", err.Error())
+	// }
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment")
 	}
+
 	expirent, _ := strconv.Atoi(os.Getenv("JWT_EXPIRE"))
 
 	return &Config{

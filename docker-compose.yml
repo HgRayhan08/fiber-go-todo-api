@@ -1,0 +1,50 @@
+# services:
+#   todolist:
+#     image: todolist
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     ports:
+#       - 3000:3000
+
+version: '3.8'
+
+services:
+  todolist:
+    image: todolist
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    environment:
+      DB_HOST: postgres
+      DB_USER: user
+      DB_PASSWORD: password123
+      DB_NAME: todo_db
+      DB_PORT: 5432
+      DB_TZ: Asia/Jakarta
+      JWT_KEY: todoListGolangSecretKey
+      JWT_EXPIRE: 10
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: todo_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
