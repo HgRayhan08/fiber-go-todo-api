@@ -23,22 +23,29 @@ func main() {
 			ErrorHandler: middleware.ErrorHandler(),
 		},
 	)
+
+	// middleware JWT Protected
 	jwtMidd := middleware.JWTProtected(*config)
+
 	// Middleware Rate Limiting
 	app.Use(middleware.RateLimited())
 
 	// repository
 	taskDatabase := repository.NewTodoDatabase(dbConnection)
 	authDatabase := repository.NewUserDatabase(dbConnection)
+	categoryDatabase := repository.NewCategoryDatabase(dbConnection)
 
 	// Service
-	TaskService := service.NewTodoService(taskDatabase)
+	TaskService := service.NewTodoService(taskDatabase, categoryDatabase)
 	AuthService := service.NewAuthService(config, authDatabase)
+	categoryService := service.NewCategoryService(categoryDatabase)
 
 	// API
-	api.NewTaskApi(app, TaskService, jwtMidd)
 	api.NewAuthApi(app, AuthService)
+	api.NewTaskApi(app, TaskService, jwtMidd)
+	api.NewCategoryApi(app, categoryService, jwtMidd)
 
 	// api.NewTodoDatabase(todoDatabase)
-	_ = app.Listen(config.Server.Host + ":" + config.Server.Port)
+	// _ = app.Listen(config.Server.Host + ":" + config.Server.Port)
+	app.Listen(":9000")
 }

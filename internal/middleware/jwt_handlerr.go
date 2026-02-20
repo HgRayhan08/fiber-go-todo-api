@@ -14,7 +14,7 @@ func JWTProtected(cfg config.Config) fiber.Handler {
 		if authHeader == "" {
 			return fiber.NewError(fiber.StatusUnauthorized, "Missing Authorization header")
 		}
-		// Format: Bearer <token>
+
 		splitToken := strings.Split(authHeader, " ")
 		if len(splitToken) != 2 || splitToken[0] != "Bearer" {
 			return fiber.NewError(fiber.StatusUnauthorized, "Invalid Authorization format")
@@ -23,7 +23,7 @@ func JWTProtected(cfg config.Config) fiber.Handler {
 		tokenStr := splitToken[1]
 
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-			// Validasi metode signing HARUS HS256
+
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fiber.NewError(fiber.StatusUnauthorized, "Invalid signing method")
 			}
@@ -39,7 +39,6 @@ func JWTProtected(cfg config.Config) fiber.Handler {
 			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token claims")
 		}
 
-		// simpan ke context
 		c.Locals("user_id", claims["id"])
 
 		return c.Next()
